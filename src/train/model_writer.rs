@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{self, Seek, SeekFrom, Write};
+use std::io::{self, Cursor, Seek, SeekFrom, Write};
 use std::path::Path;
 
 use cqdb::CQDBWriter;
@@ -121,10 +121,34 @@ impl ModelWriter {
         labels: &Dictionary,
         attrs: &Dictionary,
     ) -> io::Result<()> {
+        let mut file = File::create(filename)?;
+        Self::write_to(&mut file, fgen, labels, attrs)
+    }
+
+    /// Write model to in-memory buffer in CRFsuite format
+    ///
+    /// This method prunes zero-weight features and unused attributes before
+    /// writing, resulting in smaller model files. This matches CRFsuite's
+    /// default behavior.
+    pub fn write_to_bytes(
+        fgen: &FeatureGenerator,
+        labels: &Dictionary,
+        attrs: &Dictionary,
+    ) -> io::Result<Vec<u8>> {
+        let mut cursor: Cursor<Vec<u8>> = Cursor::new(Vec::new());
+        Self::write_to(&mut cursor, fgen, labels, attrs)?;
+
+        Ok(cursor.into_inner())
+    }
+
+    fn write_to<W: Write + Seek>(
+        mut file: &mut W,
+        fgen: &FeatureGenerator,
+        labels: &Dictionary,
+        attrs: &Dictionary,
+    ) -> io::Result<()> {
         // Prune zero-weight features and unused attributes
         let pruned = PrunedModel::from_fgen(fgen, attrs, labels);
-
-        let mut file = File::create(filename)?;
 
         // Helper to convert stream position to u32 with overflow check
         let pos_to_u32 = |pos: u64| -> io::Result<u32> {
@@ -177,7 +201,7 @@ impl ModelWriter {
     }
 
     /// Align the file position to a 4-byte boundary with zero padding.
-    fn align_to_u32(file: &mut File) -> io::Result<()> {
+    fn align_to_u32<W: Write + Seek>(file: &mut W) -> io::Result<()> {
         let mut pos = file.stream_position()?;
         while pos % 4 != 0 {
             file.write_all(&[0])?;
@@ -187,7 +211,7 @@ impl ModelWriter {
     }
 
     /// Write CQDB dictionary
-    fn write_cqdb(file: &mut File, dict: &Dictionary) -> io::Result<()> {
+    fn write_cqdb<W: Write + Seek>(file: &mut W, dict: &Dictionary) -> io::Result<()> {
         let mut writer = CQDBWriter::new(file)?;
 
         // Write all dictionary entries
@@ -204,8 +228,8 @@ impl ModelWriter {
     }
 
     /// Write file header for pruned model
-    fn write_header_pruned(
-        file: &mut File,
+    fn write_header_pruned<W: Write + Seek>(
+        file: &mut W,
         pruned: &PrunedModel,
         labels: &Dictionary,
     ) -> io::Result<()> {
@@ -226,8 +250,8 @@ impl ModelWriter {
 
     /// Write header with actual offsets for pruned model
     #[allow(clippy::too_many_arguments)]
-    fn write_header_with_offsets_pruned(
-        file: &mut File,
+    fn write_header_with_offsets_pruned<W: Write + Seek>(
+        file: &mut W,
         pruned: &PrunedModel,
         labels: &Dictionary,
         off_features: u32,
@@ -253,7 +277,10 @@ impl ModelWriter {
     }
 
     /// Write features section for pruned model
-    fn write_features_pruned(file: &mut File, pruned: &PrunedModel) -> io::Result<()> {
+    fn write_features_pruned<W: Write + Seek>(
+        file: &mut W,
+        pruned: &PrunedModel,
+    ) -> io::Result<()> {
         file.write_all(b"FEAT")?;
 
         let num_features_u32 = u32::try_from(pruned.num_features()).map_err(|_| {
@@ -284,7 +311,10 @@ impl ModelWriter {
     }
 
     /// Write label feature references for pruned model
-    fn write_label_refs_pruned(file: &mut File, pruned: &PrunedModel) -> io::Result<()> {
+    fn write_label_refs_pruned<W: Write + Seek>(
+        file: &mut W,
+        pruned: &PrunedModel,
+    ) -> io::Result<()> {
         let num_labels = pruned.label_refs.len();
         let total_labels = num_labels
             .checked_add(2)
@@ -365,7 +395,10 @@ impl ModelWriter {
     }
 
     /// Write attribute feature references for pruned model
-    fn write_attr_refs_pruned(file: &mut File, pruned: &PrunedModel) -> io::Result<()> {
+    fn write_attr_refs_pruned<W: Write + Seek>(
+        file: &mut W,
+        pruned: &PrunedModel,
+    ) -> io::Result<()> {
         let num_attrs = pruned.attr_refs.len();
         let chunk_start = u32::try_from(file.stream_position()?).map_err(|_| {
             io::Error::new(

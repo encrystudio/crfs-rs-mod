@@ -180,8 +180,7 @@ impl<A: TrainingAlgorithm> Trainer<A> {
         self.labels.clear();
     }
 
-    /// Train the model and save to file
-    pub fn train(&mut self, filename: &Path) -> io::Result<()> {
+    fn train_core(&mut self) -> io::Result<FeatureGenerator> {
         if self.instances.is_empty() {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
@@ -193,6 +192,7 @@ impl<A: TrainingAlgorithm> Trainer<A> {
         if self.verbose {
             println!("Generating features...");
         }
+
         let mut fgen = FeatureGenerator::generate(
             &self.instances,
             &self.attrs,
@@ -209,10 +209,18 @@ impl<A: TrainingAlgorithm> Trainer<A> {
         // Train with selected algorithm
         A::train(self, &mut fgen)?;
 
+        Ok(fgen)
+    }
+
+    /// Train the model and save to file
+    pub fn train(&mut self, filename: &Path) -> io::Result<()> {
+        let fgen = self.train_core()?;
+
         // Save model
         if self.verbose {
             println!("Saving model to {}...", filename.display());
         }
+
         ModelWriter::write(filename, &fgen, &self.labels, &self.attrs)?;
 
         if self.verbose {
@@ -220,6 +228,23 @@ impl<A: TrainingAlgorithm> Trainer<A> {
         }
 
         Ok(())
+    }
+
+    /// Train the model and return model bytes
+    pub fn train_to_bytes(&mut self) -> io::Result<Vec<u8>> {
+        let fgen = self.train_core()?;
+
+        if self.verbose {
+            println!("Saving model to memory...");
+        }
+
+        let bytes = ModelWriter::write_to_bytes(&fgen, &self.labels, &self.attrs)?;
+
+        if self.verbose {
+            println!("Training completed.");
+        }
+
+        Ok(bytes)
     }
 
     /// Extract feature counts for a given label sequence

@@ -15,6 +15,7 @@ Currently this fork works as a drop-in replacement for the original `crfs` crate
 
 ### Crate
 
+- Added `Trainer.train_to_bytes()` to train the model using an in-memory buffer instead of a real file, returning a `Vec<u8>`
 - Updated dependencies
 - Changed name from `crfs` to `crfs-mod` (`crfs_mod` in code)
 
