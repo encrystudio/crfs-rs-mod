@@ -15,7 +15,8 @@ Currently this fork works as a drop-in replacement for the original `crfs` crate
 
 ### Crate
 
-- Added `Trainer.train_to_bytes()` to train the model using an in-memory buffer instead of a real file, returning a `Vec<u8>`
+- Added `Taggger.tag_with_confidence()` to get the confidence scores for each tag (see doc comment for more information)
+- Added `Tagger.train_to_bytes()`
 - Updated dependencies
 - Changed name from `crfs` to `crfs-mod` (`crfs_mod` in code)
 

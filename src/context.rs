@@ -32,7 +32,7 @@ pub struct ViterbiState {
     ///
     /// This is a `[T][L]` matrix whose element `[t][l]` presents the total
     /// score of paths starting at BOS and arriving at (t, l).
-    alpha_score: Vec<f64>,
+    pub(crate) alpha_score: Vec<f64>,
     /// Backward edges
     ///
     /// This is a `[T][L]` matrix whose element `[t][j]` represents the label #i

@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{self};
 
 use crate::attribute::Attribute;
 use crate::context::{Context, Flag, Reset, ViterbiState};
@@ -65,6 +65,71 @@ impl<'a> Tagger<'a> {
             labels.push(label);
         }
         Ok(labels)
+    }
+
+    /// Viterbi-based confidence estimate (not a probability).
+    ///
+    /// Computes a per-token score margin between the best label and the second-best label
+    /// under the Viterbi score matrix, then maps it through a sigmoid.
+    ///
+    /// This is a heuristic confidence measure in log-score (energy) space:
+    /// - High values indicate strong separation between top labels
+    /// - Low values indicate ambiguity between competing labels
+    ///
+    /// It does NOT represent a CRF marginal probability and is not globally normalized.
+    pub fn tag_with_confidence<T: AsRef<[Attribute]>>(
+        &self,
+        xseq: &[T],
+    ) -> Result<Vec<(&str, f64)>, anyhow::Error> {
+        if xseq.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let mut instance = Instance::with_capacity(xseq.len());
+
+        for item in xseq {
+            let item: Item = item
+                .as_ref()
+                .iter()
+                .filter_map(|x| {
+                    self.model
+                        .to_attr_id(&x.name)
+                        .map(|id| dataset::Attribute::new(id, x.value))
+                })
+                .collect();
+            instance.push(item, 0);
+        }
+
+        let mut vstate = ViterbiState::new(self.num_labels, instance.num_items);
+
+        self.state_score(&instance, &mut vstate)?;
+
+        let (label_ids, _score) = self.context.viterbi(&mut vstate);
+
+        let mut result = Vec::with_capacity(label_ids.len());
+        let l = self.num_labels as usize;
+
+        for (t, label_id) in label_ids.iter().enumerate() {
+            let label = self.model.to_label(*label_id).unwrap();
+
+            let alpha_row = &vstate.alpha_score[l * t..l * (t + 1)];
+
+            let best_score = alpha_row[*label_id as usize];
+
+            let mut second_best = f64::NEG_INFINITY;
+            for (j, &s) in alpha_row.iter().enumerate() {
+                if j != *label_id as usize && s > second_best {
+                    second_best = s;
+                }
+            }
+
+            let margin = best_score - second_best;
+            let conf = 1.0 / (1.0 + (-margin).exp());
+
+            result.push((label, conf));
+        }
+
+        Ok(result)
     }
 
     fn transition_score(&mut self) -> io::Result<()> {

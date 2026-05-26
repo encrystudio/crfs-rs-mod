@@ -19,3 +19,4 @@ rustc-ice-*.txt
 Cargo.lock
 tests/output/*.cqdb
 .worktrees/
+.vscode
