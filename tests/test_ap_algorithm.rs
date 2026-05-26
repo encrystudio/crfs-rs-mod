@@ -1,5 +1,5 @@
-use crfs::Attribute;
-use crfs::train::Trainer;
+use crfs_mod::Attribute;
+use crfs_mod::train::Trainer;
 use std::path::Path;
 
 /// Test that AP algorithm can train and produce predictions
@@ -40,7 +40,7 @@ fn test_ap_basic_training() {
 
     // Load and test the model
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 
@@ -107,7 +107,7 @@ fn test_ap_convergence() {
 
     // Verify perfect prediction on training data
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 
@@ -147,12 +147,12 @@ fn test_ap_vs_lbfgs() {
 
     // Test both models
     let ap_model_data = std::fs::read(ap_model_path).unwrap();
-    let ap_model = crfs::Model::new(&ap_model_data).unwrap();
+    let ap_model = crfs_mod::Model::new(&ap_model_data).unwrap();
     let ap_tagger = ap_model.tagger().unwrap();
     let ap_predicted = ap_tagger.tag(&xseq).unwrap();
 
     let lbfgs_model_data = std::fs::read(lbfgs_model_path).unwrap();
-    let lbfgs_model = crfs::Model::new(&lbfgs_model_data).unwrap();
+    let lbfgs_model = crfs_mod::Model::new(&lbfgs_model_data).unwrap();
     let lbfgs_tagger = lbfgs_model.tagger().unwrap();
     let lbfgs_predicted = lbfgs_tagger.tag(&xseq).unwrap();
 

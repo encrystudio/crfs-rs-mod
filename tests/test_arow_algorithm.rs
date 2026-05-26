@@ -1,4 +1,4 @@
-use crfs::{Attribute, Trainer};
+use crfs_mod::{Attribute, Trainer};
 use std::path::Path;
 
 #[test]
@@ -37,7 +37,7 @@ fn test_arow_basic_training() {
 
     // Load and test the model
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 
@@ -78,7 +78,7 @@ fn test_arow_convergence() {
 
     // Verify perfect prediction on training data
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 
@@ -121,12 +121,12 @@ fn test_arow_vs_lbfgs() {
 
     // Test both models
     let arow_model_data = std::fs::read(arow_model_path).unwrap();
-    let arow_model = crfs::Model::new(&arow_model_data).unwrap();
+    let arow_model = crfs_mod::Model::new(&arow_model_data).unwrap();
     let arow_tagger = arow_model.tagger().unwrap();
     let arow_predicted = arow_tagger.tag(&xseq).unwrap();
 
     let lbfgs_model_data = std::fs::read(lbfgs_model_path).unwrap();
-    let lbfgs_model = crfs::Model::new(&lbfgs_model_data).unwrap();
+    let lbfgs_model = crfs_mod::Model::new(&lbfgs_model_data).unwrap();
     let lbfgs_tagger = lbfgs_model.tagger().unwrap();
     let lbfgs_predicted = lbfgs_tagger.tag(&xseq).unwrap();
 
@@ -203,7 +203,7 @@ fn test_arow_adaptive_regularization() {
 
     // Model should still work despite noisy data
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 

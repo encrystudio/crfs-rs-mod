@@ -1,5 +1,5 @@
-use crfs::train::Trainer;
-use crfs::{Attribute, Model};
+use crfs_mod::train::Trainer;
+use crfs_mod::{Attribute, Model};
 
 #[test]
 fn test_train_save_load_predict() {

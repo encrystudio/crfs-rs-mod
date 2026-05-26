@@ -7,8 +7,8 @@
 //! ## Training
 //!
 //! ```no_run
-//! use crfs::train::Trainer;
-//! use crfs::Attribute;
+//! use crfs_mod::train::Trainer;
+//! use crfs_mod::Attribute;
 //! use std::path::Path;
 //!
 //! let mut trainer = Trainer::lbfgs();
@@ -29,7 +29,7 @@
 //! ## Prediction
 //!
 //! ```no_run
-//! use crfs::{Attribute, Model};
+//! use crfs_mod::{Attribute, Model};
 //!
 //! let model_data = std::fs::read("model.crfsuite")?;
 //! let model = Model::new(&model_data)?;

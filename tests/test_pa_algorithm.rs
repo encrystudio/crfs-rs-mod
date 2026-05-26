@@ -1,4 +1,4 @@
-use crfs::{Attribute, Trainer, train::PaType};
+use crfs_mod::{Attribute, Trainer, train::PaType};
 use std::path::Path;
 
 #[test]
@@ -35,7 +35,7 @@ fn test_pa_basic_training() {
 
     // Load and test the model
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 
@@ -118,7 +118,7 @@ fn test_pa_convergence() {
 
     // Verify perfect prediction on training data
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 
@@ -161,12 +161,12 @@ fn test_pa_vs_lbfgs() {
 
     // Test both models
     let pa_model_data = std::fs::read(pa_model_path).unwrap();
-    let pa_model = crfs::Model::new(&pa_model_data).unwrap();
+    let pa_model = crfs_mod::Model::new(&pa_model_data).unwrap();
     let pa_tagger = pa_model.tagger().unwrap();
     let pa_predicted = pa_tagger.tag(&xseq).unwrap();
 
     let lbfgs_model_data = std::fs::read(lbfgs_model_path).unwrap();
-    let lbfgs_model = crfs::Model::new(&lbfgs_model_data).unwrap();
+    let lbfgs_model = crfs_mod::Model::new(&lbfgs_model_data).unwrap();
     let lbfgs_tagger = lbfgs_model.tagger().unwrap();
     let lbfgs_predicted = lbfgs_tagger.tag(&xseq).unwrap();
 

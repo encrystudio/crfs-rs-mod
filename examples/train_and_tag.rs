@@ -1,5 +1,5 @@
-use crfs::train::Trainer;
-use crfs::{Attribute, Model};
+use crfs_mod::train::Trainer;
+use crfs_mod::{Attribute, Model};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("CRF Training and Tagging Example");

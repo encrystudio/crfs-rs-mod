@@ -1,4 +1,4 @@
-use crfs::{Attribute, Trainer};
+use crfs_mod::{Attribute, Trainer};
 use std::path::Path;
 
 #[test]
@@ -33,7 +33,7 @@ fn test_l2sgd_basic_training() {
 
     // Load and test the model
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 
@@ -108,12 +108,12 @@ fn test_l2sgd_vs_lbfgs() {
 
     // Test both models
     let l2sgd_model_data = std::fs::read(l2sgd_model_path).unwrap();
-    let l2sgd_model = crfs::Model::new(&l2sgd_model_data).unwrap();
+    let l2sgd_model = crfs_mod::Model::new(&l2sgd_model_data).unwrap();
     let l2sgd_tagger = l2sgd_model.tagger().unwrap();
     let l2sgd_predicted = l2sgd_tagger.tag(&xseq).unwrap();
 
     let lbfgs_model_data = std::fs::read(lbfgs_model_path).unwrap();
-    let lbfgs_model = crfs::Model::new(&lbfgs_model_data).unwrap();
+    let lbfgs_model = crfs_mod::Model::new(&lbfgs_model_data).unwrap();
     let lbfgs_tagger = lbfgs_model.tagger().unwrap();
     let lbfgs_predicted = lbfgs_tagger.tag(&xseq).unwrap();
 
@@ -192,7 +192,7 @@ fn test_l2sgd_convergence() {
 
     // Verify model can predict
     let model_data = std::fs::read(model_path).unwrap();
-    let model = crfs::Model::new(&model_data).unwrap();
+    let model = crfs_mod::Model::new(&model_data).unwrap();
     let tagger = model.tagger().unwrap();
     let predicted = tagger.tag(&xseq).unwrap();
 

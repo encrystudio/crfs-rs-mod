@@ -1,27 +1,28 @@
 [package]
-name = "crfs"
-version = "0.4.1"
-authors = ["messense <messense@icloud.com>"]
-description = "Pure Rust port of CRFsuite: a fast implementation of Conditional Random Fields (CRFs)"
+name = "crfs-mod"
+version = "0.5.0"
+authors = ["messense <messense@icloud.com>", "encrystudio"]
+description = "Modified pure Rust port of CRFsuite: a fast implementation of Conditional Random Fields (CRFs)"
 edition = "2024"
 license = "MIT"
 keywords = ["crf", "crfsuite"]
 readme = "README.md"
-repository = "https://github.com/messense/crfs-rs"
+repository = "https://github.com/encrystudio/crfs-rs-mod"
+publish = false
 
 [[bench]]
 name = "crf_bench"
 harness = false
 
 [dependencies]
-anyhow = "1.0"
-bitflags = "2.10.0"
-bstr = "1.0.0"
-cqdb = "0.7"
+anyhow = "1.0.102"
+bitflags = "2.11.1"
+bstr = "1.12.1"
+cqdb = "0.7.0"
 liblbfgs = "0.1"
-rand = "0.9"
+rand = "0.10.1"
 
 [dev-dependencies]
-crfsuite = "0.3.1"
-criterion = "0.8.1"
-tempfile = "3"
+crfsuite = "0.3.2"
+criterion = "0.8.2"
+tempfile = "3.27.0"

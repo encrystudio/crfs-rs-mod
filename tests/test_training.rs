@@ -1,5 +1,5 @@
-use crfs::Attribute;
-use crfs::train::Trainer;
+use crfs_mod::Attribute;
+use crfs_mod::train::Trainer;
 
 #[test]
 fn test_basic_training() {
@@ -107,7 +107,7 @@ fn test_lbfgs_with_l1_regularization() {
 
 #[test]
 fn test_pruned_model_roundtrip() {
-    use crfs::Model;
+    use crfs_mod::Model;
 
     // Train a model that will have some zero-weight features after pruning
     let xseq = vec![

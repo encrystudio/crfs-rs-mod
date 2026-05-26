@@ -1,4 +1,4 @@
-use crfs::train::Trainer;
+use crfs_mod::train::Trainer;
 
 #[test]
 fn test_c1_negative_validation() {

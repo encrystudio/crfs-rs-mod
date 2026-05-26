@@ -1,14 +1,14 @@
-use std::fs;
+use std::{fs, hint::black_box};
 
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{Criterion, criterion_group, criterion_main};
 
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("tag");
     group.bench_function("crfs", |b| {
-        use crfs::Attribute;
+        use crfs_mod::Attribute;
 
         let buf = fs::read("tests/model.crfsuite").unwrap();
-        let model = crfs::Model::new(&buf).unwrap();
+        let model = crfs_mod::Model::new(&buf).unwrap();
         let xseq = vec![
             vec![Attribute::new("walk", 1.0), Attribute::new("shop", 0.5)],
             vec![Attribute::new("walk", 1.0)],
